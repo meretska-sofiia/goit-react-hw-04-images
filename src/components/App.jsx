@@ -47,6 +47,7 @@ export const App = () => {
 
   useEffect(() => {
     fetchImages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   useEffect(() => {
