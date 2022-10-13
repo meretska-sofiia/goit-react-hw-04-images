@@ -1,79 +1,65 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import ButtonLoadMore from './Button/Button';
-import ImageGallery from './ImageGallery/ImageGallery';
+import { ImageGallery } from './ImageGallery/ImageGallery';
 import SearchBar from './Searchbar/Searchbar';
 import fetchPhoto from 'api/request';
 
 import Loader from './Loader/Loader';
-import Modal from './Modal/Modal';
+import { Modal } from './Modal/Modal';
 
-export class App extends Component {
-  state = {
-    images: [],
-    currentPage: 1,
-    searchQuery: '',
-    isLoading: false,
-    error: null,
-    showModal: false,
-    modalUrl: '',
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalUrl, setModalUrl] = useState('');
+
+  useEffect(() => {
+    fetchImages();
+  }, [searchQuery]);
+
+  const onChangeSerchQuery = query => {
+    setImages([]);
+    setCurrentPage(1);
+    setSearchQuery(query);
+    setError(null);
   };
 
-  componentDidUpdate(_, prevState) {
-    if (this.state.searchQuery !== prevState.searchQuery) {
-      this.fetchImages();
-    }
-  }
-
-  onChangeSerchQuery = query => {
-    this.setState({
-      images: [],
-      currentPage: 1,
-      searchQuery: query,
-      error: null,
-    });
-  };
-
-  fetchImages = async () => {
-    this.setState({ isLoading: true });
+  const fetchImages = async () => {
+    setIsLoading(true);
     try {
-      const { currentPage, searchQuery } = this.state;
       const response = await fetchPhoto({
         page: currentPage,
         searchQuery: searchQuery,
       });
-
-      this.setState(prevState => ({
-        images: [...prevState.images, ...response],
-        currentPage: prevState.currentPage + 1,
-      }));
+      setImages(prev => [...prev, ...response]);
+      setCurrentPage(prev => prev + 1);
     } catch (error) {
-      this.setState({ error });
+      setError(error);
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   };
 
-  toggleModal = largeUrl => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-      modalUrl: largeUrl,
-    }));
+  const toggleModal = largeUrl => {
+    setShowModal(!showModal);
+    setModalUrl(largeUrl);
   };
 
-  render() {
-    const { images, isLoading, showModal, modalUrl } = this.state;
-    return (
-      <div className="App">
-        <SearchBar onSubmit={this.onChangeSerchQuery} />
-        <div>
-          <ImageGallery images={images} onClick={this.toggleModal} />
-        </div>
-        {images.length % 12 < 1 && images.length > 0 && (
-          <ButtonLoadMore onClick={this.fetchImages} btnRef={this.btnRef} />
-        )}
-        <Loader loading={isLoading} />
-        {showModal && <Modal url={modalUrl} toggleModal={this.toggleModal} />}
+  return (
+    <div className="App">
+      <SearchBar onSubmit={onChangeSerchQuery} />
+      <div>
+        <ImageGallery images={images} onClick={toggleModal} />
       </div>
-    );
-  }
-}
+      {images.length % 12 < 1 && images.length > 0 && (
+        <ButtonLoadMore onClick={fetchImages} />
+      )}
+      <Loader loading={isLoading} />
+      {showModal && <Modal url={modalUrl} toggleModal={toggleModal} />}
+    </div>
+  );
+};
