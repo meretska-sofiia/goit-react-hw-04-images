@@ -17,10 +17,6 @@ export const App = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalUrl, setModalUrl] = useState('');
 
-  useEffect(() => {
-    fetchImages();
-  }, [searchQuery]);
-
   const onChangeSerchQuery = query => {
     setImages([]);
     setCurrentPage(1);
@@ -49,6 +45,15 @@ export const App = () => {
     setModalUrl(largeUrl);
   };
 
+  useEffect(() => {
+    fetchImages();
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (error) {
+      console.log('Warning');
+    }
+  }, [error]);
   return (
     <div className="App">
       <SearchBar onSubmit={onChangeSerchQuery} />
