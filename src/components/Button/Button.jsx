@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
+import { forwardRef } from 'react';
 
-const ButtonLoadMore = ({ onClick }) => (
-  <button type="button" className="Button" onClick={onClick}>
+const ButtonLoadMore = forwardRef(({ onClick }, ref) => (
+  <button type="button" className="Button" ref={ref} onClick={onClick}>
     Load more
   </button>
-);
+));
+
 ButtonLoadMore.propTypes = {
   onClick: PropTypes.func,
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import ButtonLoadMore from './Button/Button';
 import { ImageGallery } from './ImageGallery/ImageGallery';
@@ -16,6 +16,8 @@ export const App = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalUrl, setModalUrl] = useState('');
+  const containerRef = useRef(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   const onChangeSerchQuery = query => {
     setImages([]);
@@ -31,12 +33,13 @@ export const App = () => {
         page: currentPage,
         searchQuery: searchQuery,
       });
+
       setImages(prev => [...prev, ...response]);
-      setCurrentPage(prev => prev + 1);
     } catch (error) {
       setError(error);
     } finally {
       setIsLoading(false);
+      if (!isMounted) setIsMounted(true);
     }
   };
 
@@ -45,16 +48,33 @@ export const App = () => {
     setModalUrl(largeUrl);
   };
 
+  const handleClickLoadMore = () => {
+    setCurrentPage(prev => prev + 1);
+  };
+
   useEffect(() => {
-    fetchImages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
+    if (searchQuery) {
+      fetchImages();
+    }
+    // eslint-disable-next-line
+  }, [searchQuery, currentPage]);
 
   useEffect(() => {
     if (error) {
       console.log('Warning');
     }
   }, [error]);
+
+  useEffect(() => {
+    if (isMounted) {
+      containerRef.current.scrollIntoView({
+        block: 'center',
+        behavior: 'smooth',
+      });
+    }
+    // eslint-disable-next-line
+  }, [images]);
+
   return (
     <div className="App">
       <SearchBar onSubmit={onChangeSerchQuery} />
@@ -62,7 +82,7 @@ export const App = () => {
         <ImageGallery images={images} onClick={toggleModal} />
       </div>
       {images.length % 12 < 1 && images.length > 0 && (
-        <ButtonLoadMore onClick={fetchImages} />
+        <ButtonLoadMore onClick={handleClickLoadMore} ref={containerRef} />
       )}
       <Loader loading={isLoading} />
       {showModal && <Modal url={modalUrl} toggleModal={toggleModal} />}
