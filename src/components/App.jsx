@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import ButtonLoadMore from './Button/Button';
 import { ImageGallery } from './ImageGallery/ImageGallery';
@@ -16,8 +16,6 @@ export const App = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalUrl, setModalUrl] = useState('');
-  const containerRef = useRef(null);
-  const [isMounted, setIsMounted] = useState(false);
 
   const onChangeSerchQuery = query => {
     setImages([]);
@@ -26,7 +24,7 @@ export const App = () => {
     setError(null);
   };
 
-  const fetchImages = async () => {
+  const fetchImages = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetchPhoto({
@@ -39,9 +37,8 @@ export const App = () => {
       setError(error);
     } finally {
       setIsLoading(false);
-      if (!isMounted) setIsMounted(true);
     }
-  };
+  }, [searchQuery, currentPage]);
 
   const toggleModal = largeUrl => {
     setShowModal(!showModal);
@@ -56,24 +53,13 @@ export const App = () => {
     if (searchQuery) {
       fetchImages();
     }
-    // eslint-disable-next-line
-  }, [searchQuery, currentPage]);
+  }, [searchQuery, currentPage, fetchImages]);
 
   useEffect(() => {
     if (error) {
       console.log('Warning');
     }
   }, [error]);
-
-  useEffect(() => {
-    if (isMounted) {
-      containerRef.current.scrollIntoView({
-        block: 'center',
-        behavior: 'smooth',
-      });
-    }
-    // eslint-disable-next-line
-  }, [images]);
 
   return (
     <div className="App">
@@ -82,7 +68,7 @@ export const App = () => {
         <ImageGallery images={images} onClick={toggleModal} />
       </div>
       {images.length % 12 < 1 && images.length > 0 && (
-        <ButtonLoadMore onClick={handleClickLoadMore} ref={containerRef} />
+        <ButtonLoadMore onClick={handleClickLoadMore} />
       )}
       <Loader loading={isLoading} />
       {showModal && <Modal url={modalUrl} toggleModal={toggleModal} />}
