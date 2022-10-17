@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { ColorRing } from 'react-loader-spinner';
-const Loader = ({ loading }) => {
+export const Loader = ({ loading }) => {
   return (
     <div className="Loader">
       {loading && (
@@ -20,4 +20,3 @@ const Loader = ({ loading }) => {
 Loader.propTypes = {
   loading: PropTypes.bool,
 };
-export default Loader;

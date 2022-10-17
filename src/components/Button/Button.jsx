@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-const ButtonLoadMore = ({ onClick }) => (
+export const ButtonLoadMore = ({ onClick }) => (
   <button type="button" className="Button" onClick={onClick}>
     Load more
   </button>
@@ -9,5 +9,3 @@ const ButtonLoadMore = ({ onClick }) => (
 ButtonLoadMore.propTypes = {
   onClick: PropTypes.func,
 };
-
-export default ButtonLoadMore;

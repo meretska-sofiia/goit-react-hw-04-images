@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-const ImageGalleryItem = ({ webformatURL, largeImageURL, onClick }) => {
+export const ImageGalleryItem = ({ webformatURL, largeImageURL, onClick }) => {
   const handleSetUrl = () => {
     onClick(largeImageURL);
   };
@@ -17,5 +17,3 @@ ImageGalleryItem.propTypes = {
   largeImageURL: PropTypes.string,
   onClick: PropTypes.func,
 };
-
-export default ImageGalleryItem;

@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-import ButtonLoadMore from './Button/Button';
+import { ButtonLoadMore } from './Button/Button';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { SearchBar } from './Searchbar/Searchbar';
-import fetchPhoto from 'api/request';
-
-import Loader from './Loader/Loader';
+import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
+import { fetchPhoto } from 'api/request';
 
 export const App = () => {
   const [images, setImages] = useState([]);
